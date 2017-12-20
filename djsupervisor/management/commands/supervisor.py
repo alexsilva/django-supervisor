@@ -30,6 +30,10 @@ import time
 from textwrap import dedent
 import traceback
 from ConfigParser import RawConfigParser, NoOptionError
+
+from supervisor.options import ClientOptions
+from supervisor.supervisorctl import Controller
+
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -47,6 +51,35 @@ AUTORELOAD_PATTERNS = getattr(settings, "SUPERVISOR_AUTORELOAD_PATTERNS",
                               ['*.py'])
 AUTORELOAD_IGNORE = getattr(settings, "SUPERVISOR_AUTORELOAD_IGNORE_PATTERNS", 
                             [".*", "#*", "*~"])
+
+
+def supervisorctl_main(args=None, options=None, **kwargs):
+    """
+    Initializes the supervisorctl with input redirect (stdin),
+     output (stdout), and errors (stderr)
+    """
+    if options is None:
+        options = ClientOptions()
+
+    stdout = kwargs.get('stdout')
+    stderr = kwargs.get('stderr')
+    stdin = kwargs.get('stdin')
+
+    if stdout is not None:
+        options.stdout = stdout
+
+    if stderr is not None:
+        options.stderr = stderr
+
+    options.realize(args, doc=__doc__)
+    c = Controller(options, stdin=stdin,
+                   stdout=stdout)
+    if options.args:
+        c.onecmd(" ".join(options.args))
+
+    if options.interactive:
+        c.exec_cmdloop(args, options)
+
 
 class Command(BaseCommand):
 
@@ -199,7 +232,10 @@ class Command(BaseCommand):
         try:
             method = getattr(self,methname)
         except AttributeError:
-            return supervisorctl.main(("-c",cfg_file) + args)
+            return supervisorctl_main(("-c",cfg_file) + args,
+                                      stdout=self.stdout,
+                                      stdin=options.get('stdin', sys.stdin),
+                                      stderr=self.stderr)
         else:
             return method(cfg_file,*args[1:],**options)
 
