@@ -70,8 +70,11 @@ setup(
   package_data=PACKAGE_DATA,
   classifiers=CLASSIFIERS,
   install_requires=[
-    "supervisor",
+    # "supervisor",
     "watchdog",
+  ],
+  dependency_links=[
+      'https://github.com/Supervisor/supervisor/archive/master.zip'
   ],
   **setup_kwds
 )
