@@ -24,13 +24,13 @@ The "supervisor" command suports several modes of operation:
 
 from __future__ import absolute_import, with_statement
 
-import sys
 import os
+import sys
 import time
-from textwrap import dedent
 import traceback
-from ConfigParser import RawConfigParser, NoOptionError
+from textwrap import dedent
 
+from ConfigParser import RawConfigParser, NoOptionError
 from supervisor.options import ClientOptions
 from supervisor.supervisorctl import Controller
 
@@ -252,7 +252,7 @@ class Command(BaseCommand):
         """Command 'supervisor getconfig' prints merged config to stdout."""
         if args:
             raise CommandError("supervisor getconfig takes no arguments")
-        print cfg_file.read()
+        print(cfg_file.read())
         return 0
 
     def _handle_autoreload(self,cfg_file,*args,**options):
@@ -301,15 +301,15 @@ class Command(BaseCommand):
                     observer.schedule(handler, live_dir, True)
                 break
             except Exception:
-                print>>sys.stderr, "COULD NOT WATCH FILESYSTEM USING"
-                print>>sys.stderr, "OBSERVER CLASS: ", ObserverCls
+                print("COULD NOT WATCH FILESYSTEM USING", file=sys.stderr)
+                print("OBSERVER CLASS: ", ObserverCls, file=sys.stderr)
                 traceback.print_exc()
                 observer.start()
                 observer.stop()
 
         # Fail out if none of the observers worked.
         if observer is None:
-            print>>sys.stderr, "COULD NOT WATCH FILESYSTEM"
+            print("COULD NOT WATCH FILESYSTEM", file=sys.stderr)
             return 1
 
         # Poll if we have an observer.
