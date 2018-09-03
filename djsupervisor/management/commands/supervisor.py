@@ -28,21 +28,15 @@ import os
 import sys
 import time
 import traceback
+from configparser import RawConfigParser, NoOptionError
+from io import StringIO
 from textwrap import dedent
 
-from ConfigParser import RawConfigParser, NoOptionError
+from django.conf import settings
+from django.core.management.base import BaseCommand, CommandError
+from supervisor import supervisord, supervisorctl
 from supervisor.options import ClientOptions
 from supervisor.supervisorctl import Controller
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
-from supervisor import supervisord, supervisorctl
-
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
 
 from djsupervisor.config import get_merged_config
 from djsupervisor.events import CallbackModifiedHandler
