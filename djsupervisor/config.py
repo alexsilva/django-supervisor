@@ -64,7 +64,7 @@ def get_merged_config(**options):
     #  Add in the project-specific config file.
     with open(config_file,"r") as f:
         data = render_config(f.read(),ctx)
-    cfg.readfp(StringIO(data))
+    cfg.readfp(StringIO(data.decode(settings.DEFAULT_CHARSET)))
     #  Add in the options specified on the command-line.
     cfg.readfp(StringIO(get_config_from_options(**options)))
     #  Add options from [program:__defaults__] to each program section
@@ -92,8 +92,8 @@ def get_merged_config(**options):
     #  talk to supervisord.  It's passworded based on secret key.
     #  If they have configured a unix socket then use that, otherwise
     #  use an inet server on localhost at fixed-but-randomish port.
-    username = hashlib.md5(settings.SECRET_KEY).hexdigest()[:7]
-    password = hashlib.md5(username).hexdigest()
+    username = hashlib.md5(settings.SECRET_KEY.encode(settings.DEFAULT_CHARSET)).hexdigest()[:7]
+    password = hashlib.md5(username.encode(settings.DEFAULT_CHARSET)).hexdigest()
     if cfg.has_section("unix_http_server"):
         set_if_missing(cfg,"unix_http_server","username",username)
         set_if_missing(cfg,"unix_http_server","password",password)
@@ -102,7 +102,7 @@ def get_merged_config(**options):
         #  This picks a "random" port in the 9000 range to listen on.
         #  It's derived from the secret key, so it's stable for a given
         #  project but multiple projects are unlikely to collide.
-        port = int(hashlib.md5(password).hexdigest()[:3],16) % 1000
+        port = int(hashlib.md5(password.encode(settings.DEFAULT_CHARSET)).hexdigest()[:3],16) % 1000
         addr = "127.0.0.1:9%03d" % (port,)
         set_if_missing(cfg,"inet_http_server","port",addr)
         set_if_missing(cfg,"inet_http_server","username",username)
