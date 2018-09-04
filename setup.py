@@ -74,7 +74,7 @@ setup(
     "watchdog",
   ],
   dependency_links=[
-      'https://github.com/Supervisor/supervisor/archive/master.zip'
+      'git+https://github.com/Supervisor/supervisor.git@master'
   ],
   **setup_kwds
 )
