@@ -10,20 +10,15 @@ and producing a final config file to control supervisord/supervisorctl.
 
 """
 
-import sys
-import os
 import hashlib
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
-from ConfigParser import RawConfigParser, NoSectionError, NoOptionError
+import os
+import sys
+from configparser import RawConfigParser, NoSectionError, NoOptionError
+from importlib import import_module
+from io import StringIO
 
 from django import template
 from django.conf import settings
-from importlib import import_module
 
 from djsupervisor.templatetags import djsupervisor_tags
 
@@ -65,7 +60,7 @@ def get_merged_config(**options):
     cfg = RawConfigParser()
     #  Start from the default configuration options.
     data = render_config(DEFAULT_CONFIG,ctx)
-    cfg.readfp(StringIO(data))
+    cfg.readfp(StringIO(data.decode(settings.DEFAULT_CHARSET)))
     #  Add in the project-specific config file.
     with open(config_file,"r") as f:
         data = render_config(f.read(),ctx)
@@ -234,7 +229,7 @@ def rerender_options(options):
     key in the options dictionary.
     """
     args = []
-    for name,value in options.iteritems():
+    for name,value in options.items():
         name = name.replace("_","-")
         if value is None:
             pass
