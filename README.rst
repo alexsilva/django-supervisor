@@ -5,6 +5,10 @@ djsupervisor:  easy integration between django and supervisord
 Django-supervisor combines the process-management awesomeness of supervisord
 with the convenience of Django's management scripts.
 
+PyInfo
+---------
+This version works with python 3+
+
 
 Rationale
 ---------
