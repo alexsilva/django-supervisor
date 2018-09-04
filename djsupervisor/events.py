@@ -1,4 +1,3 @@
-
 import time
 
 from watchdog.events import PatternMatchingEventHandler
@@ -9,6 +8,7 @@ class CallbackModifiedHandler(PatternMatchingEventHandler):
     A pattern matching event handler that calls the provided
     callback when a file is modified.
     """
+
     def __init__(self, callback, *args, **kwargs):
         self.callback = callback
         self.repeat_delay = kwargs.pop("repeat_delay", 0)

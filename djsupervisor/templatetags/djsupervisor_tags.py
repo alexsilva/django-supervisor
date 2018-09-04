@@ -12,9 +12,11 @@ import os
 import shutil
 
 from django import template
+
 register = template.Library()
 
 current_context = None
+
 
 @register.filter
 def templated(template_path):

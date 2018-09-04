@@ -43,7 +43,7 @@ from djsupervisor.events import CallbackModifiedHandler
 
 AUTORELOAD_PATTERNS = getattr(settings, "SUPERVISOR_AUTORELOAD_PATTERNS",
                               ['*.py'])
-AUTORELOAD_IGNORE = getattr(settings, "SUPERVISOR_AUTORELOAD_IGNORE_PATTERNS", 
+AUTORELOAD_IGNORE = getattr(settings, "SUPERVISOR_AUTORELOAD_IGNORE_PATTERNS",
                             [".*", "#*", "*~"])
 
 
@@ -76,7 +76,6 @@ def supervisorctl_main(args=None, options=None, **kwargs):
 
 
 class Command(BaseCommand):
-
     args = "[<command> [<process>, ...]]"
 
     help = dedent("""
@@ -181,7 +180,7 @@ class Command(BaseCommand):
             help="don't restart processes when code files change"
         )
 
-    def run_from_argv(self,argv):
+    def run_from_argv(self, argv):
         #  Customize option handling so that it doesn't choke on any
         #  options that are being passed straight on to supervisorctl.
         #  Basically, we insert "--" before the supervisorctl command.
@@ -203,7 +202,7 @@ class Command(BaseCommand):
             else:
                 argv = argv[:i] + ["--"] + argv[i:]
                 break
-        return super(Command,self).run_from_argv(argv)
+        return super(Command, self).run_from_argv(argv)
 
     def handle(self, *args, **options):
         args = args or tuple(options.pop('ctl-command'))
@@ -216,7 +215,7 @@ class Command(BaseCommand):
         cfg_file = OnDemandStringIO(get_merged_config, **options)
         #  With no arguments, we launch the processes under supervisord.
         if not args:
-            return supervisord.main(("-c",cfg_file))
+            return supervisord.main(("-c", cfg_file))
         #  With arguments, the first arg specifies the sub-command
         #  Some commands we implement ourself with _handle_<command>.
         #  The rest we just pass on to supervisorctl.
@@ -224,32 +223,32 @@ class Command(BaseCommand):
             raise ValueError("Unknown supervisor command: %s" % (args[0],))
         methname = "_handle_%s" % (args[0],)
         try:
-            method = getattr(self,methname)
+            method = getattr(self, methname)
         except AttributeError:
-            return supervisorctl_main(("-c",cfg_file) + args,
+            return supervisorctl_main(("-c", cfg_file) + args,
                                       stdout=self.stdout,
                                       stdin=options.get('stdin', sys.stdin),
                                       stderr=self.stderr)
         else:
-            return method(cfg_file,*args[1:],**options)
+            return method(cfg_file, *args[1:], **options)
 
     #
     #  The following methods implement custom sub-commands.
     #
 
-    def _handle_shell(self,cfg_file,*args,**options):
+    def _handle_shell(self, cfg_file, *args, **options):
         """Command 'supervisord shell' runs the interactive command shell."""
         args = ("--interactive",) + args
-        return supervisorctl.main(("-c",cfg_file) + args)
+        return supervisorctl.main(("-c", cfg_file) + args)
 
-    def _handle_getconfig(self,cfg_file,*args,**options):
+    def _handle_getconfig(self, cfg_file, *args, **options):
         """Command 'supervisor getconfig' prints merged config to stdout."""
         if args:
             raise CommandError("supervisor getconfig takes no arguments")
         print(cfg_file.read())
         return 0
 
-    def _handle_autoreload(self,cfg_file,*args,**options):
+    def _handle_autoreload(self, cfg_file, *args, **options):
         """Command 'supervisor autoreload' watches for code changes.
 
         This command provides a simulation of the Django dev server's
@@ -286,7 +285,7 @@ class Command(BaseCommand):
         # This will avoid errors with e.g. too many inotify watches.
         from watchdog.observers import Observer
         from watchdog.observers.polling import PollingObserver
-        
+
         observer = None
         for ObserverCls in (Observer, PollingObserver):
             observer = ObserverCls()
@@ -318,7 +317,7 @@ class Command(BaseCommand):
         observer.join()
         return 0
 
-    def _get_autoreload_programs(self,cfg_file):
+    def _get_autoreload_programs(self, cfg_file):
         """Get the set of programs to auto-reload when code changes.
 
         Such programs will have autoreload=true in their config section.
@@ -331,8 +330,8 @@ class Command(BaseCommand):
         for section in cfg.sections():
             if section.startswith("program:"):
                 try:
-                    if cfg.getboolean(section,"autoreload"):
-                        reload_progs.append(section.split(":",1)[1])
+                    if cfg.getboolean(section, "autoreload"):
+                        reload_progs.append(section.split(":", 1)[1])
                 except NoOptionError:
                     pass
         return reload_progs
@@ -366,8 +365,8 @@ class Command(BaseCommand):
                     break
             else:
                 #  Remove any ones we've found that are subdirs of it.
-                live_dirs = [dirnm2 for dirnm2 in live_dirs\
-                                    if not dirnm2.startswith(dirnm)]
+                live_dirs = [dirnm2 for dirnm2 in live_dirs \
+                             if not dirnm2.startswith(dirnm)]
                 live_dirs.append(dirnm)
         return live_dirs
 

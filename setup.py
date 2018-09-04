@@ -1,8 +1,9 @@
-
 import sys
+
 setup_kwds = {}
 if sys.version_info > (3,):
     from setuptools import setup
+
     setup_kwds["test_suite"] = "djsupervisor.tests"
     setup_kwds["use_2to3"] = True
 else:
@@ -11,13 +12,11 @@ else:
     except ImportError:
         from distutils.core import setup
 
-
 try:
     next = next
 except NameError:
     def next(i):
         return i.next()
-
 
 # Try to get "__version__" from the module itself.
 info = {}
@@ -30,8 +29,7 @@ while "__version__" not in ln:
 while "__version__" in ln:
     lines.append(ln)
     ln = next(src)
-exec("".join(lines),info)
-
+exec("".join(lines), info)
 
 NAME = "django-supervisor"
 VERSION = info["__version__"]
@@ -39,13 +37,13 @@ DESCRIPTION = "easy integration between djangocl and supervisord"
 LONG_DESC = info["__doc__"]
 AUTHOR = "Ryan Kelly"
 AUTHOR_EMAIL = "ryan@rfk.id.au"
-URL="http://github.com/rfk/django-supervisor"
+URL = "http://github.com/rfk/django-supervisor"
 LICENSE = "MIT"
 KEYWORDS = "django supervisord process"
-PACKAGES = ["djsupervisor","djsupervisor.management",
+PACKAGES = ["djsupervisor", "djsupervisor.management",
             "djsupervisor.management.commands", "djsupervisor.templatetags"]
 PACKAGE_DATA = {
-  "djsupervisor": ["contrib/*/supervisord.conf",],
+    "djsupervisor": ["contrib/*/supervisord.conf", ],
 }
 CLASSIFIERS = [
     "Programming Language :: Python",
@@ -57,21 +55,20 @@ CLASSIFIERS = [
 ]
 
 setup(
-  name=NAME,
-  version=VERSION,
-  author=AUTHOR,
-  author_email=AUTHOR_EMAIL,
-  url=URL,
-  description=DESCRIPTION,
-  long_description=LONG_DESC,
-  license=LICENSE,
-  keywords=KEYWORDS,
-  packages=PACKAGES,
-  package_data=PACKAGE_DATA,
-  classifiers=CLASSIFIERS,
-  install_requires=[
-    "watchdog",
-  ],
-  **setup_kwds
+    name=NAME,
+    version=VERSION,
+    author=AUTHOR,
+    author_email=AUTHOR_EMAIL,
+    url=URL,
+    description=DESCRIPTION,
+    long_description=LONG_DESC,
+    license=LICENSE,
+    keywords=KEYWORDS,
+    packages=PACKAGES,
+    package_data=PACKAGE_DATA,
+    classifiers=CLASSIFIERS,
+    install_requires=[
+        "watchdog",
+    ],
+    **setup_kwds
 )
-

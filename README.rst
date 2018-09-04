@@ -1,4 +1,3 @@
-
 djsupervisor:  easy integration between django and supervisord
 ==============================================================
 
