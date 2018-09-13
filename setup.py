@@ -22,13 +22,22 @@ except NameError:
 info = {}
 src = open("djsupervisor/__init__.py")
 lines = []
-ln = next(src)
-while "__version__" not in ln:
-    lines.append(ln)
+try:
     ln = next(src)
-while "__version__" in ln:
-    lines.append(ln)
-    ln = next(src)
+    while "__version__" not in ln:
+        lines.append(ln)
+        try:
+            ln = next(src)
+        except StopIteration:
+            break
+    while "__version__" in ln:
+        lines.append(ln)
+        try:
+            ln = next(src)
+        except StopIteration:
+            break
+except StopIteration:
+    pass
 exec("".join(lines), info)
 
 NAME = "django-supervisor"
