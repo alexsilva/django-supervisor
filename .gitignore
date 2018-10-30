@@ -9,3 +9,4 @@ cover
 .tox
 MANIFEST
 *.egg-info
+.idea
