@@ -388,7 +388,10 @@ class OnDemandStringIO(object):
         self.kwds = kwds
 
     def __iter__(self):
-        return iter(self.fp)
+        fp = self.fp
+        # Corrects multiple interactions.
+        fp.seek(0)
+        return iter(fp)
 
     @property
     def fp(self):
