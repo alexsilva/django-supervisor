@@ -25,6 +25,17 @@ from djsupervisor.templatetags import djsupervisor_tags
 CONFIG_FILE = getattr(settings, "SUPERVISOR_CONFIG_FILE", "supervisord.conf")
 
 
+def config_file_path(options):
+    """Returns the full path of the configuration file (supervisor.conf)"""
+    project_dir = options.get("project_dir")
+    if project_dir is None:
+        project_dir = guess_project_dir()
+    config_file = options.get("config_file")
+    if config_file is None:
+        config_file = os.path.join(project_dir, CONFIG_FILE)
+    return config_file
+
+
 def get_merged_config(**options):
     """Get the final merged configuration for supvervisord, as a string.
 
@@ -41,9 +52,7 @@ def get_merged_config(**options):
         project_dir = guess_project_dir()
     # Find the config file to load.
     # Default to <project-dir>/supervisord.conf.
-    config_file = options.get("config_file")
-    if config_file is None:
-        config_file = os.path.join(project_dir, CONFIG_FILE)
+    config_file = config_file_path(options)
     #  Build the default template context variables.
     #  This is mostly useful information about the project and environment.
     ctx = {

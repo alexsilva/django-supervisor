@@ -38,7 +38,7 @@ from supervisor import supervisord, supervisorctl
 from supervisor.options import ClientOptions
 from supervisor.supervisorctl import Controller
 
-from djsupervisor.config import get_merged_config
+from djsupervisor.config import get_merged_config, config_file_path
 from djsupervisor.events import CallbackModifiedHandler
 
 AUTORELOAD_PATTERNS = getattr(settings, "SUPERVISOR_AUTORELOAD_PATTERNS",
@@ -386,11 +386,21 @@ class OnDemandStringIO(object):
         self.callback = callback
         self.args = args
         self.kwds = kwds
+        # last config file changes
+        self.config_file_path = config_file_path(self.kwds)
+        self.config_file_mtime = os.path.getmtime(self.config_file_path)
 
     def __iter__(self):
         fp = self.fp
-        # Corrects multiple interactions.
-        fp.seek(0)
+        config_file_mtime = os.path.getmtime(self.config_file_path)
+        if config_file_mtime > self.config_file_mtime:
+            self.config_file_mtime = config_file_mtime
+            # renew cache
+            self._fp = None
+            fp = self.fp
+        else:
+            # use the cache until changes are made to the file.
+            fp.seek(0)
         return iter(fp)
 
     @property
